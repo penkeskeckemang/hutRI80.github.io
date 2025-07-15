@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal HUT RI Ke-80 Kecamatan Kemang</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fafc; /* Light gray background */
+        }
+        .bg-batik-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e53e3e' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .card-enter, .section-fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .org-section {
+            position: relative;
+            padding-bottom: 1rem; 
+        }
+        .org-subsection {
+            position: relative;
+        }
+        .member-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .member-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Custom Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 500px;
+            width: 90%;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.visible .modal-content {
+            transform: scale(1);
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #ef4444; /* Tailwind red-500 */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Timeline Styles */
+        .timeline-container {
+            position: relative;
+            max-width: 1000px;
+            margin: auto;
+            padding: 40px 0;
+        }
+        .timeline-container::after {
+            content: '';
+            position: absolute;
+            width: 3px;
+            background-color: #e53e3e; /* red-600 */
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -1.5px;
+        }
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+        }
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            right: -10px;
+            background-color: white;
+            border: 4px solid #e53e3e; /* red-600 */
+            top: 25px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .timeline-left {
+            left: 0;
+        }
+        .timeline-right {
+            left: 50%;
+        }
+        .timeline-left::before {
+            content: " ";
+            height: 0;
+            position: absolute;
+            top: 30px;
+            width: 0;
+            z-index: 1;
+            right: 30px;
+            border: medium solid white;
+            border-width: 10px 0 10px 10px;
+            border-color: transparent transparent transparent white;
+        }
+        .timeline-right::before {
+            content: " ";
+            height: 0;
+            position: absolute;
+            top: 30px;
+            width: 0;
+            z-index: 1;
+            left: 30px;
+            border: medium solid white;
+            border-width: 10px 10px 10px 0;
+            border-color: transparent white transparent transparent;
+        }
+        .timeline-right::after {
+            left: -10px;
+        }
+        .timeline-content {
+            padding: 20px;
+            background-color: white;
+            position: relative;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        }
+        @media screen and (max-width: 768px) {
+            .timeline-container::after {
+                left: 20px;
+            }
+            .timeline-item {
+                width: 100%;
+                padding-left: 60px;
+                padding-right: 15px;
+            }
+            .timeline-item::before {
+                left: 50px;
+                border: medium solid white;
+                border-width: 10px 10px 10px 0;
+                border-color: transparent white transparent transparent;
+            }
+            .timeline-left::after, .timeline-right::after {
+                left: 10px;
+            }
+            .timeline-right {
+                left: 0%;
+            }
+        }
+        
+        /* Calendar Styles */
+        .calendar-day.has-event {
+            background-color: #fecaca; /* red-200 */
+            color: #b91c1c; /* red-800 */
+            font-weight: bold;
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .calendar-day.has-event:hover {
+            background-color: #fca5a5; /* red-300 */
+        }
+        .calendar-day.has-event::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            background-color: #ef4444; /* red-500 */
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body class="bg-red-50 bg-batik-pattern min-h-screen">
+
+    <div class="container mx-auto px-4 py-8 md:py-12">
+        <nav class="flex justify-center flex-wrap gap-2 md:gap-4 mb-8">
+            <button id="show-schedule-btn" class="bg-red-700 text-white py-2 px-5 rounded-full font-semibold shadow-md transition-transform transform hover:scale-105">Jadwal Acara</button>
+            <button id="show-org-chart-btn" class="bg-gray-200 text-gray-700 py-2 px-5 rounded-full font-semibold shadow-md transition-transform transform hover:scale-105">Struktur Organisasi</button>
+            <button id="show-timeline-btn" class="bg-gray-200 text-gray-700 py-2 px-5 rounded-full font-semibold shadow-md transition-transform transform hover:scale-105">Linimasa Acara</button>
+            <button id="show-calendar-btn" class="bg-gray-200 text-gray-700 py-2 px-5 rounded-full font-semibold shadow-md transition-transform transform hover:scale-105">Kalender Acara</button>
+            <button id="show-paskibra-schedule-btn" class="bg-gray-200 text-gray-700 py-2 px-5 rounded-full font-semibold shadow-md transition-transform transform hover:scale-105">Jadwal Paskibra</button>
+        </nav>
+
+        <div id="schedule-section" class="section-fade-in">
+            <header class="text-center mb-10 relative">
+                <h1 class="text-4xl md:text-6xl font-extrabold text-red-800">Peringatan HUT RI Ke-80</h1>
+                <p class="text-xl md:text-2xl font-semibold text-gray-700 mt-2">Tingkat Kecamatan Kemang, Kabupaten Bogor</p>
+                <div id="countdown" class="mt-6 text-2xl md:text-4xl font-bold text-gray-800 bg-white shadow-lg rounded-xl p-4 inline-block">
+                </div>
+            </header>
+
+            <main class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 md:p-10">
+                
+                <section id="lokasi-utama" class="mb-10">
+                    <h2 class="text-2xl font-bold text-center text-gray-800 mb-4">Acara Puncak: 17 Agustus 2025</h2>
+                    <p class="text-center text-gray-600 max-w-3xl mx-auto mb-6">
+                        Upacara Pengibaran Bendera dan berbagai kegiatan utama akan dipusatkan di Lapangan SMKN 1 Kemang.
+                    </p>
+                    <div class="max-w-3xl mx-auto bg-white p-4 rounded-xl shadow-lg flex flex-col items-center">
+                        <a href="https://www.google.com/maps/search/?api=1&query=SMK+Negeri+1+Kemang" target="_blank" rel="noopener noreferrer" class="block w-full h-auto">
+                            <img src="https://awsimages.detik.net.id/community/media/visual/2022/08/16/ucapan-hut-ri-ke-77_169.jpeg?w=600&q=90" alt="Peta Lokasi SMKN 1 Kemang" class="w-4/5 md:w-3/4 lg:w-2/3 h-auto rounded-lg border border-gray-200 mx-auto">
+                        </a>
+                        <p class="text-center text-sm text-gray-500 mt-2">Klik gambar untuk melihat di Google Maps</p>
+                    </div>
+                </section>
+
+                <section id="pengenalan" class="mb-10">
+                    <p class="text-center text-gray-600 max-w-3xl mx-auto">
+                        Selamat datang di pusat informasi digital untuk seluruh rangkaian acara peringatan Hari Ulang Tahun Kemerdekaan Republik Indonesia ke-80 di Kecamatan Kemang. Halaman ini dirancang untuk memudahkan staff kecamatan Kemang berdiskusi, brainstorming dan menemukan solusi. Mari kita semarakkan bersama semangat kemerdekaan!
+                    </p>
+                </section>
+                
+                <section id="filter-acara" class="mb-8">
+                    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Jelajahi Jadwal Acara</h2>
+                    <div id="filter-buttons" class="flex flex-wrap justify-center gap-3">
+                        <button data-filter="semua" class="filter-btn bg-red-700 text-white py-2 px-5 rounded-full font-semibold shadow-md transition-transform transform hover:scale-105">Semua Acara</button>
+                        <button data-filter="Lomba" class="filter-btn bg-white text-gray-700 py-2 px-5 rounded-full font-semibold shadow-md transition-transform transform hover:scale-105">Perlombaan</button>
+                        <button data-filter="Seremonial" class="filter-btn bg-white text-gray-700 py-2 px-5 rounded-full font-semibold shadow-md transition-transform transform hover:scale-105">Seremonial</button>
+                        <button data-filter="Pendukung" class="filter-btn bg-white text-gray-700 py-2 px-5 rounded-full font-semibold shadow-md transition-transform transform hover:scale-105">Kegiatan Pendukung</button>
+                    </div>
+                </section>
+
+                <section id="linimasa-acara">
+                    <div id="event-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    </div>
+                </section>
+                
+                <section id="visualisasi-jadwal" class="mt-16">
+                        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Visualisasi Kepadatan Acara</h2>
+                        <p class="text-center text-gray-600 max-w-3xl mx-auto mb-8">
+                            Bagan ini menunjukkan jumlah acara yang diselenggarakan setiap harinya selama periode perayaan. Ini membantu Anda melihat hari-hari mana yang paling padat dengan kegiatan.
+                        </p>
+                    <div class="chart-container bg-white p-4 rounded-xl shadow-lg">
+                        <canvas id="eventChart"></canvas>
+                    </div>
+                </section>
+
+                <section id="masukan-rapat" class="mt-16">
+                    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Masukan dan Penyesuaian Rapat</h2>
+                    <p class="text-center text-gray-600 max-w-3xl mx-auto mb-4">
+                        Silakan gunakan kolom di bawah ini untuk mencatat masukan, usulan, atau penyesuaian yang disepakati selama rapat koordinasi. Catatan ini akan disimpan secara otomatis.
+                    </p>
+                    <div class="max-w-3xl mx-auto bg-gray-50 p-6 rounded-xl shadow-inner">
+                        <textarea id="meeting-notes" rows="8" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" placeholder="Tuliskan masukan dan penyesuaian di sini..."></textarea>
+                        <div class="flex justify-end items-center mt-2">
+                            <button id="summarize-notes-btn" class="bg-purple-600 text-white py-1.5 px-4 rounded-full text-sm font-semibold shadow-md transition-transform transform hover:scale-105 mr-2">Ringkas Catatan ✨</button>
+                            <button id="export-all-notes-btn" class="bg-blue-600 text-white py-1.5 px-4 rounded-full text-sm font-semibold shadow-md transition-transform transform hover:scale-105 mr-2">Export Semua Catatan ke .doc</button>
+                            <button id="delete-meeting-notes-btn" class="bg-red-600 text-white py-1.5 px-4 rounded-full text-sm font-semibold shadow-md transition-transform transform hover:scale-105">Hapus Catatan</button>
+                            <span id="save-status" class="text-sm text-gray-600 ml-2"></span>
+                        </div>
+                        <div id="summary-output" class="mt-4 p-3 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm hidden">
+                            <p class="font-semibold mb-2">Ringkasan:</p>
+                            <div id="summary-text" class="whitespace-pre-wrap"></div>
+                            <div id="summary-loading" class="text-center py-2 hidden">
+                                <div class="loading-spinner"></div>
+                                <span class="ml-2 text-gray-600">Membuat ringkasan...</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+            </main>
+        </div>
+
+        <div id="org-chart-section" class="hidden section-fade-in">
+            <header class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-blue-800 mb-2">Struktur Organisasi</h1>
+                <p class="text-xl md:text-2xl font-semibold text-gray-700">Panitia Peringatan HUT RI Ke-80 Tingkat Kecamatan Kemang Tahun 2025</p>
+            </header>
+
+            <main id="org-chart-content" class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 md:p-10 flex flex-col items-center">
+                <!-- Organizational structure will be rendered here by JavaScript -->
+            </main>
+        </div>
+
+        <div id="timeline-section" class="hidden section-fade-in">
+            <header class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-red-800 mb-2">Linimasa Acara Umum</h1>
+                <p class="text-xl md:text-2xl font-semibold text-gray-700">Rangkaian Kegiatan HUT RI Ke-80 Kecamatan Kemang</p>
+            </header>
+            <main id="timeline-content" class="timeline-container">
+                <!-- Timeline content will be rendered here by JavaScript -->
+            </main>
+        </div>
+
+        <div id="calendar-section" class="hidden section-fade-in">
+            <header class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-red-800 mb-2">Kalender Acara Umum</h1>
+                <p class="text-xl md:text-2xl font-semibold text-gray-700">Rangkaian Kegiatan HUT RI Ke-80 Kecamatan Kemang</p>
+            </header>
+            <main id="calendar-content" class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 md:p-10 max-w-4xl mx-auto">
+                <!-- Calendar will be rendered here by JavaScript -->
+            </main>
+        </div>
+
+        <div id="paskibra-schedule-section" class="hidden section-fade-in">
+            <header class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-red-800 mb-2">Jadwal Kegiatan Paskibra</h1>
+                <p class="text-xl md:text-2xl font-semibold text-gray-700">Pusdiklat Paskibra Kecamatan Kemang Tahun 2024-2025</p>
+            </header>
+            <main id="paskibra-schedule-content" class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 md:p-10 max-w-5xl mx-auto">
+                <!-- Paskibra schedule table will be rendered here by JavaScript -->
+            </main>
+        </div>
+
+        <footer class="text-center mt-12 text-gray-600">
+            <p>&copy; 2025 Panitia HUT RI Ke-80 Kecamatan Kemang</p>
+        </footer>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" class="modal-overlay">
+        <div class="modal-content text-center">
+            <p id="modal-message" class="text-lg font-semibold text-gray-800 mb-6"></p>
+            <div class="flex justify-center gap-4">
+                <button id="modal-confirm-btn" class="bg-red-600 text-white py-2 px-5 rounded-full font-semibold shadow-md transition-transform transform hover:scale-105">Ya</button>
+                <button id="modal-cancel-btn" class="bg-gray-300 text-gray-800 py-2 px-5 rounded-full font-semibold shadow-md transition-transform transform hover:scale-105">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar Event Detail Modal -->
+    <div id="calendar-event-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="calendar-modal-title" class="text-xl font-bold text-gray-800">Detail Kegiatan</h3>
+                <button id="calendar-modal-close" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+            </div>
+            <div id="calendar-modal-body" class="space-y-4">
+                <!-- Event details will be injected here -->
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+        let allEventNotes = {}; 
+
+        // Static event data for the schedule
+        const eventData = [
+            { id: 'korpri-20250811', name: 'Pelafalan Korpri', category: 'Lomba', date: '2025-07-21', day: 'Senin', location: 'Kecamatan Kemang', pic: 'Yahya' },
+            { id: 'karaoke-20250812', name: 'Karaoke "Kemang Idol"', category: 'Lomba', date: '2025-07-22', day: 'Selasa', location: 'Kecamatan Kemang', pic: 'Lia Yulianti' },
+            { id: 'adzan-20250813', name: 'Lomba Adzan', category: 'Lomba', date: '2025-07-23', day: 'Rabu', location: 'Kecamatan Kemang', pic: 'Abdul Wahid' },
+            { id: 'pawai-20250813', name: 'Pawai Kirab Bendera Pusaka', category: 'Seremonial', date: '2025-08-13', day: 'Rabu', location: 'Kecamatan Kemang', pic: 'Panitia HUT RI Kecamatan Kemang' },
+            { id: 'linmas-20250814', name: 'Lomba Linmas PBB', category: 'Lomba', date: '', day: '', location: 'Kecamatan Kemang', pic: 'Seksi Trantibum Kecamatan Kemang' },
+            { id: 'paskibra-20250817', name: 'Pengukuhan Paskibra', category: 'Seremonial', date: '2025-08-17', day: 'Minggu', location: 'Aula Kecamatan Kemang', pic: 'Seksi Pendidikan dan Kesehatan' },
+            { id: 'upacara-20250817', name: 'Upacara Pengibaran Bendera', category: 'Seremonial', date: '2025-08-17', day: 'Minggu', location: 'Lapangan SMKN 1 Kemang', pic: 'Panitia HUT RI Kecamatan Kemang' },
+            { id: 'fashion-batik-20250817', name: 'Fashion Show Batik Kemang', category: 'Lomba', date: '2025-08-17', day: 'Minggu', location: 'Lapangan SMKN 1 Kemang', pic: 'Seksi Ekonomi & Pembangunan' },
+            { id: 'gpm-20250817', name: 'Gerakan Pangan Murah (GPM)', category: 'Pendukung', date: '2025-08-17', day: 'Minggu', location: 'Lapangan SMKN 1 Kemang', pic: 'Seksi Pemberdayaan Masyarakat' },
+            { id: 'administrasi-20250817', name: 'Layanan Administrasi Kependudukan', category: 'Pendukung', date: '2025-08-17', day: 'Minggu', location: 'Lapangan SMKN 1 Kemang', pic: 'Seksi Pemerintahan' },
+            { id: 'pameran-batik-20250817', name: 'Pameran Batik Kemang', category: 'Pendukung', date: '2025-08-17', day: 'Minggu', location: 'Lapangan SMKN 1 Kemang', pic: 'Ketua UMKM (Ibu Elli)' },
+            { id: 'bazaar-umkm-20250817', name: 'Bazaar UMKM', category: 'Pendukung', date: '2025-08-17', day: 'Minggu', location: 'Lapangan SMKN 1 Kemang', pic: 'Ketua UMKM (Ibu Elli)' },
+            { id: 'cek-kesehatan-20250817', name: 'Cek Kesehatan Gratis (CKG)', category: 'Pendukung', date: '2025-08-17', day: 'Minggu', location: 'Lapangan SMKN 1 Kemang', pic: 'Puskesmas Kemang & Jampang' },
+            { id: 'drumband-20250817', name: 'Atraksi Drumband', category: 'Pendukung', date: '2025-08-17', day: 'Minggu', location: 'Lapangan SMKN 1 Kemang', pic: 'Seksi Pemberdayaan Masyarakat' },
+        ];
+
+        // Data for Paskibra schedule
+        const paskibraScheduleData = [
+            { date: '2024-07-03', activity: 'Pembukaan Pendidikan dan Pelatihan serta Seleksi Paskibra Kecamatan', location: 'Kantor Kecamatan Kemang' },
+            { date: '2025-07-27', activity: 'Tantingan & Latihan Ke-1', location: 'Kantor Kecamatan Kemang' },
+            { date: '2025-08-02', activity: 'Latihan Ke-2', location: 'Lapangan Upacara' },
+            { date: '2025-08-03', activity: 'Latihan Ke-3', location: 'Lapangan Upacara' },
+            { date: '2025-08-04', activity: 'Latihan Ke-4', location: 'Lapangan Upacara' },
+            { date: '2025-08-05', activity: 'Latihan Ke-5', location: 'Lapangan Upacara' },
+            { date: '2025-08-06', activity: 'Latihan Ke-6', location: 'Lapangan Upacara' },
+            { date: '2025-08-07', activity: 'Latihan Ke-7', location: 'Lapangan Upacara' },
+            { date: '2025-08-08', activity: 'Latihan Ke-8', location: 'Lapangan Upacara' },
+            { date: '2025-08-09', activity: 'Latihan Ke-9', location: 'Lapangan Upacara' },
+            { date: '2025-08-10', activity: 'Latihan Ke-10', location: 'Lapangan Upacara' },
+            { date: '2025-08-12', activity: 'Latihan Ke-11', location: 'Lapangan Upacara' },
+            { date: '2025-08-13', activity: 'Latihan Ke-12', location: 'Lapangan Upacara' },
+            { date: '2025-08-14', activity: '1. Latihan Ke-13<br>2. Cek Kesehatan', location: 'Lapangan Upacara' },
+            { date: '2025-08-15', activity: 'Latihan Ke-14', location: 'Aula Kantor Kecamatan Kemang' },
+            { date: '2025-08-16', activity: '1. Pelaksanaan Gladi Pengibaran dan Penurunan<br>2. Pengukuhan (Bada Ashar)', location: 'Lapangan Upacara' },
+            { date: '2025-08-17', activity: '1. Pelaksanaan Pengibaran Upacara HUT-RI ke 80<br>2. Pemberian Piagam Penghargaan<br>3. Pembubaran Pusdiklat Paskibra Kemang (Malam Keakraban)', location: 'Lapangan Upacara' },
+        ];
+        
+        const allEventsData = [
+            ...eventData.filter(e => e.date).map(e => ({
+                date: e.date,
+                name: e.name,
+                location: e.location,
+                category: e.category
+            })),
+            ...paskibraScheduleData.map(e => ({
+                date: e.date,
+                name: e.activity,
+                location: e.location,
+                category: 'Paskibra'
+            }))
+        ].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        const orgData = [
+            { "role": "Penanggung Jawab", "members": [{"name": "Drs. Imam Mahmudi, M.Si", "title": "Camat Kemang"}, {"name": "Danramil Kemang", "title": "Danramil"}, {"name": "Kapolsek Kemang", "title": "Kapolsek"}] },
+            { "role": "Pengendali", "members": [{"name": "Budi Riva, S.STP., MA", "title": "Sekcam"}, {"name": "Lurah dan Kades Se Kec. Kemang", "title": "Atang Senjaya, Semplak Barat, Parakanjaya, Bojong, Kemang, Tegal, Pondok Udik, Jampang, Pabuaran"}] },
+            { "role": "Ketua Pelaksana", "members": [{"name": "Iwan Setiawan, S.AP.MA", "title": "Kasi Ekbang"}] },
+            { "role": "Sekretaris", "members": [{"name": "Muhamad Maulana", "title": "Penata Kelola Sistem & Teknologi Informasi"}, {"name": "Rizal Agung Maulana", "title": "Pelaksana"}] },
+            { "role": "Bendahara", "members": [{"name": "Asep Saepullah, S.AP", "title": "Kasi Penkes"}] },
+            { "role": "BIDANG I KERUMAHTANGGAAN, KEPROTOKOLAN, PERS DAN MEDIA", "members": [{"name": "BP SUHANDA, S.Sos", "title": "KETUA BIDANG I<BR>Pelaksana Pemerintahan"}], "sub_sections": [
+                {"role": "Koordinator Kerumahtanggaan", "members": [{"name": "Isum Sumiati", "title": "<b>Ketua Koordinator</b><br>Penanggung Jawab Snack"}, {"name": "Lia Yulianti", "title": "Penanggung Jawab VIP"}, {"name": "Winda Nur Ahni", "title": "Penanggung Jawab VIP"}, {"name": "Riandini Puspitasari", "title": "Penanggung Jawab Tumpeng"}, {"name": "Jatmika Praja", "title": "Penanggung Jawab Tumpeng"}, {"name": "Yahya", "title": "Penanggung Jawab Snack"}, {"name": "Adi Pratama", "title": "Penanggung Jawab Ruang Paskibra, Kesehatan, Obade"}, {"name": "Ahmad Kusnandar", "title": "Penanggung Jawab Ruang Paskibra, Kesehatan, Obade"}]},
+                {"role": "Koordinator Keprotokolan", "members": [{"name": "Dr. Farah", "title": "<b>Ketua Koordinator</b>"}, {"name": "Isak Iskandar", "title": ""}]},
+                {"role": "Koordinator Absensi", "members": [{"name": "Ibu Eka Hartati", "title": "<b>Ketua Koordinator</b>"}, {"name": "Rikha Rahmah", "title": ""}, {"name": "Aris Putra Pratama", "title": ""}, {"name": "Nadila Rachmainoer", "title": ""}, {"name": "Reza Pahlevie", "title": ""}]},
+                {"role": "Koordinator UMKM dan GPM", "members": [{"name": "Amir Sugiyanto, SH", "title": "<b>Ketua Koordinator</b>"}, {"name": "Dwi Anjar Pramesti, SE", "title": ""}, {"name": "Anisa Sholihah", "title": ""}, {"name": "Hadi", "title": ""}, {"name": "Ibnu", "title": ""}]},
+                {"role": "Koordinator Perlengkapan", "members": [{"name": "Bpk. Nurhaman", "title": "<b>Ketua Koordinator</b>"}, {"name": "Marsudin", "title": ""}, {"name": "Achmad Hoerudin", "title": ""}, {"name": "Abdul Wahid", "title": ""}, {"name": "Agung Maulana", "title": ""}, {"name": "Adrian Arya Kusuma", "title": ""}]},
+                {"role": "Koordinator Kebersihan", "members": [{"name": "Eka Dulloh", "title": "<b>Ketua Koordinator</b>"}, {"name": "Rizki", "title": ""}, {"name": "Siti Aisyah", "title": ""}, {"name": "Achmad Hoerudin", "title": ""}, {"name": "Adrian Arya Kusuma", "title": ""}]},
+                {"role": "Koordinator Publikasi", "members": [{"name": "Bpk Suhendar", "title": "<b>Ketua Koordinator</b>"}, {"name": "Mohamad Raka Fahrul R", "title": ""}, {"name": "Balna Sudjana Ermaya", "title": ""}, {"name": "Guruh Muluk Angkasa", "title": ""}]}
+            ]},
+            { "role": "BIDANG II PENGAMANAN DAN KESEHATAN", "members": [{"name": "PLT KASI TRANTIB", "title": "KETUA BIDANG II"}], "sub_sections": [
+                {"role": "Koordinator Bidang Keamanan", "members": [{"name": "Narman", "title": "<b>Ketua Koordinator</b>"}, {"name": "Unsur Pol PP", "title": ""}, {"name": "Unsur Koramil", "title": ""}, {"name": "Unsur Polsek", "title": ""}]},
+                {"role": "Koordinator Bidang Kesehatan", "members": [{"name": "Asep Saepullah, S.AP", "title": "<b>Ketua Koordinator</b>"}, {"name": "Unsur Puskesmas Kemang", "title": ""}, {"name": "Unsur Puskesmas Jampang", "title": ""}]}
+            ]},
+            { "role": "BIDANG III SENI DAN BUDAYA", "members": [{"name": "KASUBAG UMPEG", "title": "KETUA BIDANG III"}, {"name": "Agus Maulana", "title": ""}, {"name": "Noerma Ziella,A.Md", "title": ""}]}
+        ];
+
+        // Get references to DOM elements
+        const allSections = document.querySelectorAll('.section-fade-in');
+        const allNavButtons = document.querySelectorAll('nav button');
+        const showScheduleBtn = document.getElementById('show-schedule-btn');
+        const showOrgChartBtn = document.getElementById('show-org-chart-btn');
+        const showTimelineBtn = document.getElementById('show-timeline-btn');
+        const showCalendarBtn = document.getElementById('show-calendar-btn');
+        const showPaskibraScheduleBtn = document.getElementById('show-paskibra-schedule-btn');
+
+        const eventListContainer = document.getElementById('event-list');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const countdownElement = document.getElementById('countdown');
+        const meetingNotesTextarea = document.getElementById('meeting-notes');
+        const saveStatusElement = document.getElementById('save-status');
+        const exportAllNotesBtn = document.getElementById('export-all-notes-btn');
+        const deleteMeetingNotesBtn = document.getElementById('delete-meeting-notes-btn'); 
+        const orgChartContent = document.getElementById('org-chart-content');
+
+        const timelineContent = document.getElementById('timeline-content');
+        const calendarContent = document.getElementById('calendar-content');
+        const paskibraScheduleContent = document.getElementById('paskibra-schedule-content');
+
+        const summarizeNotesBtn = document.getElementById('summarize-notes-btn');
+        const summaryOutputDiv = document.getElementById('summary-output');
+        const summaryTextDiv = document.getElementById('summary-text');
+        const summaryLoadingSpinner = document.getElementById('summary-loading');
+
+        // Modal elements
+        const confirmationModal = document.getElementById('confirmation-modal');
+        const modalMessage = document.getElementById('modal-message');
+        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+        let currentModalOnConfirm = null; 
+
+        // Calendar modal elements
+        const calendarEventModal = document.getElementById('calendar-event-modal');
+        const calendarModalTitle = document.getElementById('calendar-modal-title');
+        const calendarModalBody = document.getElementById('calendar-modal-body');
+        const calendarModalClose = document.getElementById('calendar-modal-close');
+
+        let calendarState = {
+            date: new Date('2025-07-01')
+        };
+
+        function renderEvents(filter = 'semua') {
+            eventListContainer.innerHTML = ''; 
+            const filteredEvents = eventData.filter(event => filter === 'semua' || event.category === filter);
+            
+            filteredEvents.forEach(event => {
+                const eventDate = new Date(event.date);
+                const formattedDate = event.date ? eventDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Segera Diumumkan';
+                
+                let categoryColor = 'bg-gray-500';
+                if (event.category === 'Lomba') categoryColor = 'bg-blue-600';
+                if (event.category === 'Seremonial') categoryColor = 'bg-red-700';
+                if (event.category === 'Pendukung') categoryColor = 'bg-green-600';
+
+                const eventNoteId = `event-note-${event.id}`;
+                const savedNoteData = allEventNotes[eventNoteId] || { content: '', timestamp: '' }; 
+
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-lg shadow-lg overflow-hidden flex flex-col card-enter';
+                card.innerHTML = `
+                    <div class="p-5 flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-bold uppercase tracking-wider text-white px-3 py-1 rounded-full ${categoryColor}">${event.category}</span>
+                            <span class="text-sm font-semibold text-gray-600">${event.day ? `${event.day}, ` : ''}${formattedDate}</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">${event.name}</h3>
+                        <div class="text-gray-600 space-y-2 text-sm mb-4">
+                            <p><span class="font-semibold">📍 Lokasi:</span> ${event.location}</p>
+                            <p><span class="font-semibold">👤 P. Jawab:</span> ${event.pic}</p>
+                        </div>
+                        <div class="mt-4">
+                            <label for="${eventNoteId}" class="block text-sm font-medium text-gray-700 mb-2">Catatan Kegiatan:</label>
+                            <textarea id="${eventNoteId}" rows="3" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 text-sm" placeholder="Tambahkan catatan Anda di sini...">${savedNoteData.content}</textarea>
+                            <p id="note-timestamp-${eventNoteId}" class="text-xs text-gray-500 mt-1 text-right">${savedNoteData.timestamp ? `Terakhir disimpan: ${savedNoteData.timestamp}` : ''}</p>
+                            <div class="flex justify-end items-center mt-2">
+                                <button data-event-id="${eventNoteId}" class="save-event-note-btn bg-red-600 text-white py-1.5 px-4 rounded-full text-sm font-semibold shadow-md transition-transform transform hover:scale-105 mr-2">Simpan Catatan</button>
+                                <button data-event-id="${eventNoteId}" class="delete-event-note-btn bg-gray-400 text-white py-1.5 px-4 rounded-full text-sm font-semibold shadow-md transition-transform transform hover:scale-105">Hapus Catatan</button>
+                                <span id="save-status-${eventNoteId}" class="text-xs text-gray-500 ml-2"></span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                eventListContainer.appendChild(card);
+            });
+
+            document.querySelectorAll('.save-event-note-btn').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const eventId = e.target.dataset.eventId;
+                    const textarea = document.getElementById(eventId);
+                    await saveEventNote(eventId, textarea.value);
+                    document.getElementById(`save-status-${eventId}`).textContent = 'Tersimpan!';
+                    setTimeout(() => {
+                        document.getElementById(`save-status-${eventId}`).textContent = '';
+                    }, 2000);
+                });
+            });
+
+            document.querySelectorAll('.delete-event-note-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const eventId = e.target.dataset.eventId;
+                    showConfirmationModal(`Apakah Anda yakin ingin menghapus catatan untuk kegiatan ini?`, () => {
+                        try {
+                            localStorage.removeItem(eventId); 
+                            document.getElementById(eventId).value = ''; 
+                            document.getElementById(`note-timestamp-${eventId}`).textContent = ''; 
+                            delete allEventNotes[eventId]; 
+                            document.getElementById(`save-status-${eventId}`).textContent = 'Catatan dihapus!';
+                            setTimeout(() => { document.getElementById(`save-status-${eventId}`).textContent = ''; }, 2000);
+                        } catch (error) {
+                            console.error(`Error deleting event note ${eventId}:`, error);
+                            document.getElementById(`save-status-${eventId}`).textContent = 'Gagal menghapus!';
+                        }
+                    });
+                });
+            });
+
+            document.querySelectorAll('[id^="event-note-"]').forEach(textarea => {
+                let eventSaveTimeout;
+                textarea.addEventListener('input', (e) => {
+                    clearTimeout(eventSaveTimeout);
+                    const eventId = e.target.id;
+                    document.getElementById(`save-status-${eventId}`).textContent = 'Menyimpan...';
+                    eventSaveTimeout = setTimeout(async () => {
+                        await saveEventNote(eventId, e.target.value);
+                        document.getElementById(`save-status-${eventId}`).textContent = 'Tersimpan otomatis!';
+                        setTimeout(() => {
+                            document.getElementById(`save-status-${eventId}`).textContent = '';
+                        }, 2000);
+                    }, 1500); 
+                });
+            });
+        }
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(btn => {
+                    btn.classList.remove('bg-red-700', 'text-white');
+                    btn.classList.add('bg-white', 'text-gray-700');
+                });
+                button.classList.add('bg-red-700', 'text-white');
+                button.classList.remove('bg-white', 'text-gray-700');
+                
+                const filter = button.getAttribute('data-filter'); 
+                renderEvents(filter); 
+            });
+        });
+
+        function startCountdown() {
+            const targetDate = new Date('2025-08-17T00:00:00').getTime();
+            const interval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = targetDate - now;
+
+                if (distance < 0) {
+                    clearInterval(interval);
+                    countdownElement.innerHTML = "Selamat Hari Kemerdekaan!";
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                countdownElement.innerHTML = `
+                    <span class="tabular-nums">${days}</span> hari 
+                    <span class="tabular-nums">${hours}</span> jam 
+                    <span class="tabular-nums">${minutes}</span> menit 
+                    <span class="tabular-nums">${seconds}</span> detik
+                `;
+            }, 1000);
+        }
+        
+        function createChart() {
+            const ctx = document.getElementById('eventChart').getContext('2d');
+            const eventCounts = allEventsData.reduce((acc, event) => {
+                if (!event.date) return acc;
+                const date = new Date(event.date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+                acc[date] = (acc[date] || 0) + 1;
+                return acc;
+            }, {});
+
+            const sortedLabels = Object.keys(eventCounts).sort((a, b) => {
+                const [dayA, monthA] = a.split(' ');
+                const [dayB, monthB] = b.split(' ');
+                const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+                const dateA = new Date(2025, monthNames.indexOf(monthA), parseInt(dayA));
+                const dateB = new Date(2025, monthNames.indexOf(monthB), parseInt(dayB));
+                return dateA - dateB;
+            });
+            
+            const dataValues = sortedLabels.map(label => eventCounts[label]);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedLabels,
+                    datasets: [{
+                        label: 'Jumlah Acara per Hari',
+                        data: dataValues,
+                        backgroundColor: 'rgba(220, 38, 38, 0.6)', 
+                        borderColor: 'rgba(185, 28, 28, 1)', 
+                        borderWidth: 1,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, 
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1 }, title: { display: true, text: 'Jumlah Acara' } },
+                        x: { title: { display: true, text: 'Tanggal Pelaksanaan' } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) { label += context.parsed.y + ' acara'; }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderOrgChart() {
+            orgChartContent.innerHTML = ''; 
+
+            orgData.forEach(section => {
+                const sectionDiv = document.createElement('div');
+                sectionDiv.className = 'org-section w-full max-w-4xl mb-8';
+                sectionDiv.innerHTML = `<h3 class="text-2xl font-bold text-blue-700 text-center mb-6">${section.role}</h3>`;
+                
+                if (section.members) {
+                    const membersDiv = document.createElement('div');
+                    membersDiv.className = 'flex flex-wrap justify-center gap-4';
+                    section.members.forEach(member => {
+                        membersDiv.innerHTML += `
+                            <div class="member-card bg-blue-50 border border-blue-200 rounded-lg p-4 text-center shadow-sm flex-shrink-0 w-40">
+                                <p class="font-semibold text-blue-800">${member.name}</p>
+                                <p class="text-sm text-gray-600">${member.title || ''}</p>
+                            </div>`;
+                    });
+                    sectionDiv.appendChild(membersDiv);
+                }
+
+                if (section.sub_sections) {
+                    const subSectionsDiv = document.createElement('div');
+                    subSectionsDiv.className = 'mt-8 flex flex-col items-center';
+                    section.sub_sections.forEach(sub => {
+                        const subDiv = document.createElement('div');
+                        subDiv.className = 'org-subsection w-full text-center mb-6';
+                        subDiv.innerHTML = `
+                            <h4 class="text-xl font-semibold text-blue-600 mb-4">${sub.role}</h4>
+                            <div class="flex flex-wrap justify-center gap-3">
+                                ${sub.members.map(member => `
+                                    <div class="member-card bg-blue-50 border border-blue-200 rounded-lg p-3 text-center shadow-sm flex-shrink-0 w-36">
+                                        <p class="font-medium text-blue-700">${member.name}</p>
+                                        <p class="text-xs text-gray-500">${member.title || ''}</p>
+                                    </div>`).join('')}
+                            </div>`;
+                        subSectionsDiv.appendChild(subDiv);
+                    });
+                    sectionDiv.appendChild(subSectionsDiv);
+                }
+                orgChartContent.appendChild(sectionDiv);
+            });
+        }
+
+        function renderTimeline() {
+            timelineContent.innerHTML = '';
+            allEventsData.forEach((item, index) => {
+                const side = index % 2 === 0 ? 'timeline-left' : 'timeline-right';
+                const formattedDate = new Date(item.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                
+                let categoryColor = 'border-gray-400';
+                let categoryTextColor = 'text-gray-500';
+                if (item.category === 'Lomba') { categoryColor = 'border-blue-600'; categoryTextColor = 'text-blue-600';}
+                if (item.category === 'Seremonial') { categoryColor = 'border-red-700'; categoryTextColor = 'text-red-700';}
+                if (item.category === 'Pendukung') { categoryColor = 'border-green-600'; categoryTextColor = 'text-green-600';}
+                if (item.category === 'Paskibra') { categoryColor = 'border-yellow-500'; categoryTextColor = 'text-yellow-500';}
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `timeline-item ${side}`;
+                itemDiv.innerHTML = `
+                    <div class="timeline-content border-l-4 ${categoryColor}">
+                        <h3 class="text-lg font-bold text-gray-800">${formattedDate}</h3>
+                        <p class="font-bold mt-2 ${categoryTextColor}">${item.category}</p>
+                        <p class="text-gray-700 mt-1">${item.name.replace(/<br>/g, ' ')}</p>
+                        <p class="text-sm text-gray-500 mt-2">📍 ${item.location}</p>
+                    </div>
+                `;
+                timelineContent.appendChild(itemDiv);
+            });
+        }
+
+        function renderPaskibraSchedule() {
+            paskibraScheduleContent.innerHTML = '';
+            const table = document.createElement('table');
+            table.className = 'w-full text-left border-collapse';
+            table.innerHTML = `
+                <thead class="bg-red-700 text-white">
+                    <tr>
+                        <th class="p-3 text-sm font-semibold tracking-wide border border-red-600">Tanggal</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide border border-red-600">Kegiatan</th>
+                        <th class="p-3 text-sm font-semibold tracking-wide border border-red-600">Tempat</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                </tbody>
+            `;
+            const tbody = table.querySelector('tbody');
+            paskibraScheduleData.forEach(item => {
+                const formattedDate = new Date(item.date).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                const row = document.createElement('tr');
+                row.className = 'bg-white hover:bg-red-50';
+                row.innerHTML = `
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap border">${formattedDate}</td>
+                    <td class="p-3 text-sm text-gray-700 border">${item.activity}</td>
+                    <td class="p-3 text-sm text-gray-700 border">${item.location}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            paskibraScheduleContent.appendChild(table);
+        }
+
+        function renderCalendar() {
+            calendarContent.innerHTML = '';
+            const { date } = calendarState;
+            const year = date.getFullYear();
+            const month = date.getMonth();
+
+            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            const daysOfWeek = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+
+            const firstDayOfMonth = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            const header = document.createElement('div');
+            header.className = 'flex justify-between items-center mb-4';
+            header.innerHTML = `
+                <button id="prev-month" class="bg-red-600 text-white p-2 rounded-full shadow-md hover:bg-red-700 transition">&lt;</button>
+                <h3 class="text-2xl font-bold text-gray-800">${monthNames[month]} ${year}</h3>
+                <button id="next-month" class="bg-red-600 text-white p-2 rounded-full shadow-md hover:bg-red-700 transition">&gt;</button>
+            `;
+            calendarContent.appendChild(header);
+
+            const grid = document.createElement('div');
+            grid.className = 'grid grid-cols-7 gap-2';
+            
+            daysOfWeek.forEach(day => {
+                grid.innerHTML += `<div class="font-bold text-center text-gray-600 p-2">${day}</div>`;
+            });
+
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                grid.innerHTML += '<div></div>';
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const currentDate = new Date(year, month, day);
+                const dateString = currentDate.toISOString().split('T')[0];
+                const eventsOnDay = allEventsData.filter(e => e.date === dateString);
+                
+                const dayCell = document.createElement('div');
+                dayCell.className = 'calendar-day h-12 flex items-center justify-center text-gray-700 border border-transparent rounded-full';
+                if (eventsOnDay.length > 0) {
+                    dayCell.classList.add('has-event');
+                    dayCell.addEventListener('click', () => showCalendarEventDetails(eventsOnDay, currentDate));
+                }
+                dayCell.textContent = day;
+                grid.appendChild(dayCell);
+            }
+            calendarContent.appendChild(grid);
+
+            document.getElementById('prev-month').addEventListener('click', () => {
+                calendarState.date.setMonth(calendarState.date.getMonth() - 1);
+                renderCalendar();
+            });
+            document.getElementById('next-month').addEventListener('click', () => {
+                calendarState.date.setMonth(calendarState.date.getMonth() + 1);
+                renderCalendar();
+            });
+        }
+
+        function showSection(sectionId, activeBtn) {
+            allSections.forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            const sectionToShow = document.getElementById(sectionId);
+            if(sectionToShow) {
+                sectionToShow.classList.remove('hidden');
+            }
+
+            allNavButtons.forEach(btn => {
+                btn.classList.remove('bg-red-700', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+
+            if (activeBtn) {
+                activeBtn.classList.add('bg-red-700', 'text-white');
+                activeBtn.classList.remove('bg-gray-200', 'text-gray-700');
+            }
+        }
+
+        // Event listeners for navigation buttons
+        showScheduleBtn.addEventListener('click', () => showSection('schedule-section', showScheduleBtn));
+        showOrgChartBtn.addEventListener('click', () => {
+            renderOrgChart(); 
+            showSection('org-chart-section', showOrgChartBtn);
+        });
+        showTimelineBtn.addEventListener('click', () => {
+            renderTimeline();
+            showSection('timeline-section', showTimelineBtn);
+        });
+        showCalendarBtn.addEventListener('click', () => {
+            renderCalendar();
+            showSection('calendar-section', showCalendarBtn);
+        });
+        showPaskibraScheduleBtn.addEventListener('click', () => {
+            renderPaskibraSchedule();
+            showSection('paskibra-schedule-section', showPaskibraScheduleBtn);
+        });
+
+
+        function showModal(modalElement) {
+            modalElement.classList.add('visible');
+        }
+
+        function hideModal(modalElement) {
+            modalElement.classList.remove('visible');
+        }
+
+        function showConfirmationModal(message, onConfirmCallback) {
+            modalMessage.textContent = message;
+            currentModalOnConfirm = onConfirmCallback;
+            showModal(confirmationModal);
+        }
+        
+        modalConfirmBtn.addEventListener('click', () => {
+            if (currentModalOnConfirm) {
+                currentModalOnConfirm();
+            }
+            hideModal(confirmationModal);
+        });
+
+        modalCancelBtn.addEventListener('click', () => hideModal(confirmationModal));
+
+        function showCalendarEventDetails(events, date) {
+            calendarModalTitle.textContent = `Kegiatan pada ${date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`;
+            calendarModalBody.innerHTML = '';
+            events.forEach(event => {
+                let categoryColor = 'border-gray-400';
+                if (event.category === 'Lomba') categoryColor = 'border-blue-600';
+                if (event.category === 'Seremonial') categoryColor = 'border-red-700';
+                if (event.category === 'Pendukung') categoryColor = 'border-green-600';
+                if (event.category === 'Paskibra') categoryColor = 'border-yellow-500';
+
+                const eventDiv = document.createElement('div');
+                eventDiv.className = `p-3 rounded-lg border-l-4 ${categoryColor} bg-gray-50`;
+                eventDiv.innerHTML = `
+                    <p class="font-bold text-gray-800">${event.name.replace(/<br>/g, ', ')}</p>
+                    <p class="text-sm text-gray-600">Kategori: ${event.category}</p>
+                    <p class="text-sm text-gray-600">📍 Lokasi: ${event.location}</p>
+                `;
+                calendarModalBody.appendChild(eventDiv);
+            });
+            showModal(calendarEventModal);
+        }
+
+        calendarModalClose.addEventListener('click', () => hideModal(calendarEventModal));
+        calendarEventModal.addEventListener('click', (e) => {
+            if (e.target === calendarEventModal) {
+                hideModal(calendarEventModal);
+            }
+        });
+
+
+        async function saveMeetingNotes(notes) {
+            try {
+                const dataToSave = { content: notes, timestamp: new Date().toLocaleString('id-ID') };
+                localStorage.setItem('main_meeting_notes', JSON.stringify(dataToSave));
+                saveStatusElement.textContent = 'Tersimpan!';
+            } catch (error) {
+                console.error("Error saving meeting notes to local storage:", error);
+                saveStatusElement.textContent = 'Gagal menyimpan!';
+            }
+        }
+
+        function loadMeetingNotes() {
+            try {
+                const savedData = localStorage.getItem('main_meeting_notes');
+                if (savedData) {
+                    const parsedData = JSON.parse(savedData);
+                    meetingNotesTextarea.value = parsedData.content || '';
+                    saveStatusElement.textContent = 'Dimuat dari penyimpanan lokal.';
+                } else {
+                    meetingNotesTextarea.value = '';
+                    saveStatusElement.textContent = 'Belum ada catatan.';
+                }
+                setTimeout(() => {
+                    saveStatusElement.textContent = '';
+                }, 2000);
+            } catch (error) {
+                console.error("Error loading meeting notes from local storage:", error);
+                saveStatusElement.textContent = 'Gagal memuat catatan.';
+            }
+        }
+
+        deleteMeetingNotesBtn.addEventListener('click', () => {
+            showConfirmationModal('Apakah Anda yakin ingin menghapus semua catatan rapat utama?', () => {
+                try {
+                    localStorage.removeItem('main_meeting_notes');
+                    meetingNotesTextarea.value = ''; 
+                    saveStatusElement.textContent = 'Catatan rapat utama dihapus!';
+                    setTimeout(() => { saveStatusElement.textContent = ''; }, 2000);
+                } catch (error) {
+                    console.error("Error deleting meeting notes from local storage:", error);
+                    saveStatusElement.textContent = 'Gagal menghapus catatan rapat utama!';
+                }
+            });
+        });
+
+        async function saveEventNote(eventNoteId, noteContent) {
+            try {
+                const timestamp = new Date().toLocaleString('id-ID'); 
+                const dataToSave = { content: noteContent, timestamp: timestamp };
+                localStorage.setItem(eventNoteId, JSON.stringify(dataToSave));
+                allEventNotes[eventNoteId] = dataToSave; 
+                
+                const noteTimestampElement = document.getElementById(`note-timestamp-${eventNoteId}`);
+                if (noteTimestampElement) {
+                    noteTimestampElement.textContent = `Terakhir disimpan: ${timestamp}`;
+                }
+            } catch (error) {
+                console.error(`Error saving event note ${eventNoteId} to local storage:`, error);
+            }
+        }
+
+        function loadAllEventNotes() {
+            allEventNotes = {}; 
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('event-note-')) { 
+                    try {
+                        const data = JSON.parse(localStorage.getItem(key));
+                        if (data && data.content !== undefined && data.timestamp !== undefined) {
+                            allEventNotes[key] = data;
+                        }
+                    } catch (e) {
+                        console.error(`Error parsing local storage item ${key}:`, e);
+                    }
+                }
+            }
+            renderEvents(); 
+        }
+
+        function initializeAndLoadNotes() {
+            loadMeetingNotes(); 
+            loadAllEventNotes(); 
+        }
+
+        let meetingNotesSaveTimeout;
+        meetingNotesTextarea.addEventListener('input', () => {
+            clearTimeout(meetingNotesSaveTimeout);
+            saveStatusElement.textContent = 'Menyimpan...';
+            meetingNotesSaveTimeout = setTimeout(() => {
+                saveMeetingNotes(meetingNotesTextarea.value);
+            }, 1500); 
+        });
+
+        function exportNotesToDoc() {
+            let content = `Jadwal HUT RI Ke-80 Kecamatan Kemang - Catatan Rapat dan Kegiatan\n\n`;
+            content += `Tanggal Export: ${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}\n\n`;
+
+            content += `========================================\n`;
+            content += `CATATAN RAPAT UTAMA:\n`;
+            content += `========================================\n`;
+            const mainNotesData = JSON.parse(localStorage.getItem('main_meeting_notes') || '{}');
+            content += mainNotesData.content || 'Tidak ada catatan rapat utama.\n';
+            content += `Waktu Input: ${mainNotesData.timestamp || 'Tidak tersedia'}\n\n\n`;
+
+            content += `========================================\n`;
+            content += `CATATAN KEGIATAN INDIVIDUAL:\n`;
+            content += `========================================\n`;
+
+            if (Object.keys(allEventNotes).length === 0) {
+                content += 'Tidak ada catatan kegiatan individual.\n';
+            } else {
+                eventData.forEach(event => {
+                    const eventNoteId = `event-note-${event.id}`;
+                    const noteData = allEventNotes[eventNoteId];
+                    if (noteData && noteData.content) {
+                        const eventDate = event.date ? new Date(event.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Segera Diumumkan';
+                        content += `\n--- Kegiatan: ${event.name} (${event.day ? `${event.day}, ` : ''}${eventDate}) ---\n`;
+                        content += `Lokasi: ${event.location}\n`;
+                        content += `P. Jawab: ${event.pic}\n`;
+                        content += `Catatan: ${noteData.content}\n`;
+                        content += `Waktu Input: ${noteData.timestamp || 'Tidak tersedia'}\n`; 
+                    }
+                });
+            }
+
+            const blob = new Blob([content], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Catatan_HUT_RI_Kemang_${new Date().toISOString().slice(0, 10)}.doc`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        exportAllNotesBtn.addEventListener('click', exportNotesToDoc);
+
+        summarizeNotesBtn.addEventListener('click', async () => {
+            const notesContent = meetingNotesTextarea.value.trim();
+            if (!notesContent) {
+                summaryOutputDiv.classList.remove('hidden');
+                summaryTextDiv.textContent = "Tidak ada catatan untuk diringkas.";
+                return;
+            }
+
+            summaryOutputDiv.classList.remove('hidden');
+            summaryTextDiv.textContent = '';
+            summaryLoadingSpinner.classList.remove('hidden');
+
+            try {
+                let chatHistory = [];
+                const prompt = `Tolong ringkas catatan rapat berikut ini dalam format poin-poin singkat dan padat:\n\n${notesContent}`;
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+                const payload = { contents: chatHistory };
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    summaryTextDiv.textContent = text;
+                } else {
+                    summaryTextDiv.textContent = "Gagal membuat ringkasan. Respon API tidak terduga.";
+                    console.error("Unexpected API response structure:", result);
+                }
+            } catch (error) {
+                summaryTextDiv.textContent = "Terjadi kesalahan saat menghubungi Gemini API.";
+                console.error("Error calling Gemini API:", error);
+            } finally {
+                summaryLoadingSpinner.classList.add('hidden');
+            }
+        });
+
+
+        // Initialize the app when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeAndLoadNotes(); 
+            startCountdown();
+            createChart();
+            renderEvents(); 
+            // Set initial view
+            showSection('schedule-section', showScheduleBtn);
+        });
+    </script>
+</body>
+</html>
